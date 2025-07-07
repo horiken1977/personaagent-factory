@@ -35,8 +35,8 @@ define('DB_PASS', $_ENV['DB_PASS'] ?? '');
 
 // API設定
 define('OPENAI_API_KEY', $_ENV['OPENAI_API_KEY'] ?? '');
-define('CLAUDE_API_KEY', $_ENV['CLAUDE_API_KEY'] ?? '');
-define('GEMINI_API_KEY', $_ENV['GEMINI_API_KEY'] ?? '');
+define('CLAUDE_API_KEY', $_ENV['ANTHROPIC_API_KEY'] ?? '');
+define('GEMINI_API_KEY', $_ENV['GOOGLE_AI_API_KEY'] ?? '');
 
 // Google Sheets API設定
 define('GOOGLE_CLIENT_ID', $_ENV['GOOGLE_CLIENT_ID'] ?? '');

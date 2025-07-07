@@ -19,6 +19,20 @@ try {
         'gemini' => !empty(GEMINI_API_KEY) ? 'configured' : 'missing'
     ];
     
+    // 詳細デバッグ情報
+    $envContent = [];
+    $envPath = __DIR__ . '/../../.env';
+    if (file_exists($envPath)) {
+        $lines = file($envPath, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+        foreach ($lines as $line) {
+            if (strpos(trim($line), '#') === 0) continue;
+            if (strpos($line, '=') !== false) {
+                list($key, $value) = explode('=', $line, 2);
+                $envContent[trim($key)] = strlen(trim($value)) > 0 ? 'set' : 'empty';
+            }
+        }
+    }
+    
     // 利用可能なプロバイダーを取得
     $providers = getAvailableProviders();
     
