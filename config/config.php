@@ -11,8 +11,7 @@ ini_set('display_errors', 1);
 // タイムゾーン設定
 date_default_timezone_set('Asia/Tokyo');
 
-// セッション設定
-session_start();
+// セッション設定は後で実行
 
 // 環境設定ファイル読み込み
 if (file_exists(__DIR__ . '/../.env')) {
@@ -148,15 +147,20 @@ function setSecurityHeaders() {
     header('X-XSS-Protection: 1; mode=block');
     header('Referrer-Policy: strict-origin-when-cross-origin');
     
-    // HTTPS環境でのみSecure Cookieを設定
+    // HTTPS環境でのみHTSTSヘッダーを設定
     if (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on') {
-        ini_set('session.cookie_secure', 1);
         header('Strict-Transport-Security: max-age=31536000; includeSubDomains');
     }
 }
 
 // セキュリティヘッダー適用
 setSecurityHeaders();
+
+// セッション設定とスタート
+if (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on') {
+    ini_set('session.cookie_secure', 1);
+}
+session_start();
 
 /**
  * ペルソナデータ読み込み
