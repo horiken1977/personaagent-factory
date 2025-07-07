@@ -283,15 +283,34 @@ personaagent_factory/
 │   ├── functional_design.html     # 機能設計書
 │   ├── environment_design.html    # 環境設計書
 │   ├── test_specification.html    # テスト仕様書
+│   ├── _config.yml                # GitHub Pages設定
 │   └── scripts/                   # 自動更新スクリプト
 │       ├── auto_update.py         # チャット解析・自動更新
-│       └── backup_chat.py         # チャット自動保存
+│       ├── backup_chat.py         # チャット自動保存
+│       └── status_monitor.py      # システム監視
+├── src/                           # アプリケーションソース
+│   ├── index.html                # メインUI
+│   ├── personas.json             # ペルソナデータ
+│   ├── css/style.css             # スタイルシート
+│   ├── js/script.js              # フロントエンドJS
+│   └── api/                      # API エンドポイント
+│       ├── chat.php              # チャットAPI
+│       ├── history.php           # 履歴API
+│       ├── logs.php              # ログAPI
+│       └── providers.php         # プロバイダーAPI
+├── config/                        # 設定ファイル
+│   └── config.php                # アプリケーション設定
+├── .github/workflows/             # GitHub Actions
+│   └── deploy.yml                # 自動デプロイ
 ├── test/                          # テスト関連
 │   ├── scripts/                   # テスト実行スクリプト
 │   └── data/                      # テストデータ
-├── src/                           # ソースコード (予定)
-├── config/                        # 設定ファイル (予定)
-├── .github/                       # GitHub Actions設定 (予定)
+├── logs/                          # ログファイル
+├── backups/                       # チャットバックアップ
+├── index.php                      # エントリーポイント
+├── setup.php                      # 初期設定画面
+├── .env.example                   # 環境設定テンプレート
+├── DEPLOYMENT.md                  # デプロイメントガイド
 ├── claude.md                      # Claude Code メモリファイル
 └── README.md                      # プロジェクト説明
                 </pre>
@@ -303,43 +322,48 @@ personaagent_factory/
             
             <div class="env-grid">
                 <div class="env-card">
-                    <h4>ローカル開発環境 <span class="status-badge setup">構築中</span></h4>
+                    <h4>ローカル開発環境 <span class="status-badge production">完了</span></h4>
                     <p>開発者のローカルマシンでの開発環境</p>
                     <ul>
                         <li>OS: macOS (Darwin 24.5.0)</li>
                         <li>IDE: Claude Code</li>
                         <li>バージョン管理: Git</li>
-                        <li>パッケージマネージャー: 未設定</li>
+                        <li>PHP: 7.4+</li>
+                        <li>Web サーバー: 内蔵サーバー</li>
                     </ul>
                 </div>
                 
                 <div class="env-card">
-                    <h4>開発サーバー <span class="status-badge not-configured">未設定</span></h4>
-                    <p>チーム開発用の共有開発環境</p>
+                    <h4>CI/CD パイプライン <span class="status-badge production">完了</span></h4>
+                    <p>自動化されたビルド・デプロイ環境</p>
                     <ul>
-                        <li>サーバー: 未設定</li>
-                        <li>CI/CD: 未設定</li>
-                        <li>データベース: 未設定</li>
+                        <li>プラットフォーム: GitHub Actions</li>
+                        <li>自動テスト: PHP 構文チェック</li>
+                        <li>自動デプロイ: rsync + SSH</li>
+                        <li>ヘルスチェック: HTTP ステータス確認</li>
                     </ul>
                 </div>
                 
                 <div class="env-card">
-                    <h4>ステージング環境 <span class="status-badge not-configured">未設定</span></h4>
-                    <p>本番環境に近いテスト環境</p>
+                    <h4>テスト環境 <span class="status-badge production">完了</span></h4>
+                    <p>統合テスト・動作確認環境</p>
                     <ul>
-                        <li>クラウドプロバイダー: 未設定</li>
-                        <li>コンテナ: 未設定</li>
-                        <li>監視: 未設定</li>
+                        <li>統合テスト: 完了</li>
+                        <li>ペルソナテスト: 10種類完了</li>
+                        <li>AIプロバイダーテスト: 3種類完了</li>
+                        <li>UI/UXテスト: 完了</li>
                     </ul>
                 </div>
                 
                 <div class="env-card">
-                    <h4>本番環境 <span class="status-badge not-configured">未設定</span></h4>
+                    <h4>本番環境 <span class="status-badge production">稼働中</span></h4>
                     <p>実際のサービス提供環境</p>
                     <ul>
-                        <li>クラウドプロバイダー: 未設定</li>
-                        <li>ロードバランサー: 未設定</li>
-                        <li>バックアップ: 未設定</li>
+                        <li>ホスティング: Sakura Internet</li>
+                        <li>URL: mokumoku.sakura.ne.jp</li>
+                        <li>PHP: 7.4+</li>
+                        <li>HTTPS: 対応</li>
+                        <li>監視: リアルタイムログ</li>
                     </ul>
                 </div>
             </div>
