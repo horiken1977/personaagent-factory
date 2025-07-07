@@ -4,12 +4,31 @@
  * アプリケーションログの表示・取得機能
  */
 
-require_once '../../config/config.php';
+// エラー表示を有効化（デバッグ用）
+ini_set('display_errors', 1);
+error_reporting(E_ALL);
+
+// 設定ファイルのパスを確認
+$configPath = dirname(dirname(__DIR__)) . '/config/config.php';
+if (!file_exists($configPath)) {
+    die(json_encode(['error' => 'Config file not found at: ' . $configPath]));
+}
+
+require_once $configPath;
 
 header('Content-Type: application/json');
 header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Methods: GET');
 header('Access-Control-Allow-Headers: Content-Type');
+
+// LOGS_PATHの確認
+if (!defined('LOGS_PATH')) {
+    die(json_encode(['error' => 'LOGS_PATH not defined']));
+}
+
+if (!is_dir(LOGS_PATH)) {
+    die(json_encode(['error' => 'Logs directory not found: ' . LOGS_PATH]));
+}
 
 try {
     $action = $_GET['action'] ?? 'recent';
@@ -37,7 +56,23 @@ try {
     http_response_code(500);
     echo json_encode([
         'success' => false,
-        'error' => $e->getMessage()
+        'error' => $e->getMessage(),
+        'debug' => [
+            'file' => $e->getFile(),
+            'line' => $e->getLine(),
+            'trace' => $e->getTraceAsString()
+        ]
+    ]);
+} catch (Error $e) {
+    http_response_code(500);
+    echo json_encode([
+        'success' => false,
+        'error' => 'Fatal error: ' . $e->getMessage(),
+        'debug' => [
+            'file' => $e->getFile(),
+            'line' => $e->getLine(),
+            'trace' => $e->getTraceAsString()
+        ]
     ]);
 }
 

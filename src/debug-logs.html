@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PersonaAgent Factory - Debug Logs</title>
+    <style>
+        body {
+            font-family: monospace;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        pre {
+            background: white;
+            padding: 15px;
+            border: 1px solid #ddd;
+            overflow-x: auto;
+            white-space: pre-wrap;
+        }
+        button {
+            padding: 10px 20px;
+            margin: 5px;
+            cursor: pointer;
+        }
+        .error {
+            color: red;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <h1>PersonaAgent Factory - Debug Logs</h1>
+    
+    <div>
+        <button onclick="loadLogs('recent')">Recent Logs</button>
+        <button onclick="loadLogs('error')">Error Logs Only</button>
+        <button onclick="testAPI()">Test Chat API</button>
+    </div>
+    
+    <h2>Logs:</h2>
+    <pre id="logs">Loading...</pre>
+    
+    <script>
+        async function loadLogs(type = 'recent') {
+            try {
+                const response = await fetch(`api/logs.php?action=${type}&lines=100`);
+                const text = await response.text();
+                
+                let data;
+                try {
+                    data = JSON.parse(text);
+                } catch (e) {
+                    document.getElementById('logs').innerHTML = `<span class="error">Response is not JSON:</span>\n${text}`;
+                    return;
+                }
+                
+                if (data.success && data.logs) {
+                    document.getElementById('logs').textContent = data.logs.join('\n') || 'No logs found';
+                } else {
+                    document.getElementById('logs').innerHTML = `<span class="error">Error:</span> ${JSON.stringify(data, null, 2)}`;
+                }
+            } catch (error) {
+                document.getElementById('logs').innerHTML = `<span class="error">Network error:</span> ${error.message}`;
+            }
+        }
+        
+        async function testAPI() {
+            try {
+                const response = await fetch('api/providers.php');
+                const data = await response.json();
+                document.getElementById('logs').textContent = 'Providers API Response:\n' + JSON.stringify(data, null, 2);
+            } catch (error) {
+                document.getElementById('logs').innerHTML = `<span class="error">API Test Error:</span> ${error.message}`;
+            }
+        }
+        
+        // Load recent logs on page load
+        loadLogs('recent');
+    </script>
+</body>
+</html>
