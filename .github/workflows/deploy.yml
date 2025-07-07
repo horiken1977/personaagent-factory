@@ -1,4 +1,4 @@
-name: Deploy to Production
+name: Deploy to Sakura Internet
 
 on:
   push:
@@ -67,13 +67,13 @@ jobs:
           --exclude='temp/' \
           -e "sshpass -p '${{ secrets.SFTP_PASSWORD }}' ssh -o StrictHostKeyChecking=no -o ConnectTimeout=10" \
           ./ \
-          ${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST }}:${{ secrets.SSH_REMOTE_PATH }}
+          ${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST }}:/home/mokumoku/www/persona-factory/
 
     - name: Set up server environment
       run: |
         sshpass -p '${{ secrets.SFTP_PASSWORD }}' ssh -o StrictHostKeyChecking=no -o ConnectTimeout=10 \
           ${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST }} << 'ENDSSH'
-          cd ${{ secrets.SSH_REMOTE_PATH }}
+          cd /home/mokumoku/www/persona-factory
           
           # Create .env file if it doesn't exist
           if [ ! -f .env ]; then

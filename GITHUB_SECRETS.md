@@ -10,10 +10,11 @@ GitHub Actions での自動デプロイを有効にするために、以下のSe
 
 ```
 SFTP_PASSWORD=your_sakura_password
-SSH_USERNAME=your_sakura_username  
-SSH_HOST=your_sakura_host
-SSH_REMOTE_PATH=/home/mokumoku/www/persona-factory
+SSH_USERNAME=mokumoku
+SSH_HOST=mokumoku.sakura.ne.jp
 ```
+
+**注意**: SSH_REMOTE_PATHは使用せず、ワークフロー内で直接パスを指定しています。
 
 ## 📋 Secrets 設定手順
 
@@ -39,9 +40,7 @@ SSH_REMOTE_PATH=/home/mokumoku/www/persona-factory
 - **Name**: `SSH_HOST`
 - **Secret**: Sakura Internetのホスト名
 
-#### SSH_REMOTE_PATH
-- **Name**: `SSH_REMOTE_PATH`
-- **Secret**: `/home/mokumoku/www/persona-factory`
+**必要なSecretsは3つのみです。SSH_REMOTE_PATHは不要です。**
 
 ## 🚀 デプロイの実行方法
 
@@ -56,7 +55,7 @@ GitHub Secrets設定後、以下のいずれかで自動デプロイが実行さ
 
 2. **手動実行**
    - GitHubリポジトリの **Actions** タブにアクセス
-   - **Deploy to Production** ワークフローを選択
+   - **Deploy to Sakura Internet** ワークフローを選択
    - **Run workflow** ボタンをクリック
 
 ## 🔧 デプロイ後の手動設定
@@ -173,7 +172,7 @@ Error: Permission denied
 
 デプロイ設定完了の確認：
 
-- [ ] GitHub Secrets 4つすべて設定済み
+- [ ] GitHub Secrets 3つすべて設定済み
 - [ ] GitHub Actions ワークフロー正常実行
 - [ ] https://mokumoku.sakura.ne.jp/persona-factory/ にアクセス可能
 - [ ] サーバー上の .env ファイルにAPI キー設定済み
