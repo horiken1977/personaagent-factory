@@ -369,11 +369,32 @@ class PersonaAgentFactory {
         if (!this.chatHistories[personaId]) {
             this.chatHistories[personaId] = [];
         }
+        
+        // 既存のチャットメッセージを全てクリア
+        this.clearChatDisplay();
+        
+        // ウェルカムメッセージを表示
         this.displayWelcomeMessage();
         this.focusChatInput();
         
         // 既存の履歴があれば表示
         this.displayExistingHistory(personaId);
+    }
+    
+    // チャット表示領域をクリア
+    clearChatDisplay() {
+        const messagesContainer = document.getElementById('chatMessages');
+        if (messagesContainer) {
+            // ウェルカムメッセージ以外の全てのメッセージを削除
+            const messages = messagesContainer.querySelectorAll('.message:not(.welcome-message .message)');
+            messages.forEach(msg => msg.remove());
+            
+            // ウェルカムメッセージ自体も一旦クリア
+            const welcomeContent = document.getElementById('welcomeMessageContent');
+            if (welcomeContent) {
+                welcomeContent.innerHTML = '';
+            }
+        }
     }
     
     // 現在のペルソナのチャット履歴を取得
@@ -393,11 +414,13 @@ class PersonaAgentFactory {
                 const messageElement = document.createElement('div');
                 messageElement.className = `message ${item.type}-message`;
                 
-                const contentElement = document.createElement('div');
-                contentElement.className = 'message-content';
-                contentElement.innerHTML = this.formatMessageContent(item.content);
+                const avatar = item.type === 'user' ? '👤' : this.getPersonaAvatar(this.selectedPersona.position);
                 
-                messageElement.appendChild(contentElement);
+                messageElement.innerHTML = `
+                    <div class="message-avatar">${avatar}</div>
+                    <div class="message-content">${this.formatMessage(item.content)}</div>
+                `;
+                
                 messagesContainer.appendChild(messageElement);
             });
             
@@ -642,12 +665,10 @@ class PersonaAgentFactory {
                 this.chatHistories[this.selectedPersona.id] = [];
             }
             
-            const messagesContainer = document.getElementById('chatMessages');
-            if (messagesContainer) {
-                // ウェルカムメッセージ以外を削除
-                const messages = messagesContainer.querySelectorAll('.message:not(.welcome-message .message)');
-                messages.forEach(msg => msg.remove());
-            }
+            // 画面表示をクリアして再初期化
+            this.clearChatDisplay();
+            this.displayWelcomeMessage();
+            
             this.showToast('チャット履歴をクリアしました');
         }
     }
