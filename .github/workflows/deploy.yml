@@ -119,3 +119,4 @@ jobs:
         echo "🚀 Deployment completed successfully!"
         echo "🌐 Site URL: https://mokumoku.sakura.ne.jp/persona-factory/"
         echo "⚠️ Remember to manually set API keys in the .env file on the server"
+        echo "📅 Deployed at: $(date)"
