@@ -30,7 +30,7 @@ class PersonaAgentFactory {
     // ペルソナデータの読み込み
     async loadPersonas() {
         try {
-            const response = await fetch('../src/personas.json');
+            const response = await fetch('personas.json');
             if (!response.ok) {
                 throw new Error(`HTTP ${response.status}: ${response.statusText}`);
             }
@@ -46,7 +46,7 @@ class PersonaAgentFactory {
     // 利用可能なプロバイダーの取得
     async loadProviders() {
         try {
-            const response = await fetch('../api/providers.php');
+            const response = await fetch('api/providers.php');
             if (!response.ok) {
                 throw new Error(`HTTP ${response.status}: ${response.statusText}`);
             }
@@ -456,7 +456,7 @@ class PersonaAgentFactory {
         this.setLoading(true);
         
         try {
-            const response = await fetch('../api/chat.php', {
+            const response = await fetch('api/chat.php', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

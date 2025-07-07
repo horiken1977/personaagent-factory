@@ -1,0 +1,22 @@
+RewriteEngine On
+
+# Enable CORS for all requests
+Header add Access-Control-Allow-Origin "*"
+Header add Access-Control-Allow-Headers "origin, x-requested-with, content-type"
+Header add Access-Control-Allow-Methods "PUT, GET, POST, DELETE, OPTIONS"
+
+# Set proper content type for PHP files
+<Files "*.php">
+    SetHandler application/x-httpd-php
+</Files>
+
+# Enable pretty URLs for API endpoints
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^([^/]+)/?$ $1.php [L,QSA]
+
+# Security: Prevent access to sensitive files
+<Files ~ "\.(env|log|bak|tmp)$">
+    Order allow,deny
+    Deny from all
+</Files>
