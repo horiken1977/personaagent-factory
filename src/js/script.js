@@ -10,6 +10,7 @@ class PersonaAgentFactory {
         this.selectedProvider = null;
         this.chatHistory = [];
         this.isLoading = false;
+        this.inputConfirmed = false; // 入力確定状態
         
         this.init();
     }
@@ -119,18 +120,15 @@ class PersonaAgentFactory {
         const sendMessage = document.getElementById('sendMessage');
         const backToSelection = document.getElementById('backToSelection');
         const clearChat = document.getElementById('clearChat');
+        const exportHistory = document.getElementById('exportHistory');
         
         chatInput?.addEventListener('input', () => this.handleInputChange());
-        chatInput?.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter' && !e.shiftKey) {
-                e.preventDefault();
-                this.sendMessage();
-            }
-        });
+        chatInput?.addEventListener('keydown', (e) => this.handleKeyDown(e));
         
         sendMessage?.addEventListener('click', () => this.sendMessage());
         backToSelection?.addEventListener('click', () => this.backToSelection());
         clearChat?.addEventListener('click', () => this.clearChat());
+        exportHistory?.addEventListener('click', () => this.exportChatHistory());
         
         // ESCキーでモーダルを閉じる
         document.addEventListener('keydown', (e) => {
@@ -385,10 +383,51 @@ class PersonaAgentFactory {
     }
     
     // 入力変更の処理
+    // キーボード入力処理
+    handleKeyDown(e) {
+        const chatInput = document.getElementById('chatInput');
+        if (!chatInput) return;
+        
+        if (e.key === 'Enter') {
+            if (e.shiftKey) {
+                // Shift+Enter: 改行（デフォルト動作）
+                return;
+            }
+            
+            e.preventDefault();
+            
+            const inputValue = chatInput.value.trim();
+            if (!inputValue) return;
+            
+            if (!this.inputConfirmed) {
+                // 第1回Enter: 入力確定
+                this.inputConfirmed = true;
+                this.updateInputStatus('✓ 入力が確定されました。もう一度Enterで送信してください');
+                chatInput.style.borderColor = '#28a745';
+            } else {
+                // 第2回Enter: メッセージ送信
+                this.sendMessage();
+            }
+        } else {
+            // その他のキー入力: 確定状態をリセット
+            if (this.inputConfirmed) {
+                this.inputConfirmed = false;
+                chatInput.style.borderColor = '';
+                this.handleInputChange();
+            }
+        }
+    }
+    
     handleInputChange() {
         const chatInput = document.getElementById('chatInput');
         const sendButton = document.getElementById('sendMessage');
         const inputStatus = document.getElementById('inputStatus');
+        
+        // 入力内容が変更されたら確定状態をリセット
+        if (this.inputConfirmed) {
+            this.inputConfirmed = false;
+            if (chatInput) chatInput.style.borderColor = '';
+        }
         
         if (chatInput && sendButton && inputStatus) {
             const value = chatInput.value.trim();
@@ -400,9 +439,19 @@ class PersonaAgentFactory {
                 inputStatus.textContent = 'メッセージを入力してください';
             } else if (this.isLoading) {
                 inputStatus.textContent = 'AI が応答を生成中...';
+            } else if (this.inputConfirmed) {
+                inputStatus.textContent = '✓ 入力が確定されました。もう一度Enterで送信してください';
             } else {
-                inputStatus.textContent = `${value.length} 文字`;
+                inputStatus.textContent = `${value.length} 文字 (Enterで入力確定)`;
             }
+        }
+    }
+    
+    // 入力ステータス更新
+    updateInputStatus(message) {
+        const statusElement = document.getElementById('inputStatus');
+        if (statusElement) {
+            statusElement.textContent = message;
         }
     }
     
@@ -417,6 +466,11 @@ class PersonaAgentFactory {
         // ユーザーメッセージを表示
         this.addMessage(message, 'user');
         chatInput.value = '';
+        
+        // 入力確定状態をリセット
+        this.inputConfirmed = false;
+        chatInput.style.borderColor = '';
+        
         this.handleInputChange();
         
         // AI応答を取得
@@ -477,6 +531,8 @@ class PersonaAgentFactory {
             
             if (data.success) {
                 this.addMessage(data.response, 'persona');
+                // 履歴を保存
+                await this.saveChatHistory(userMessage, data.response);
             } else {
                 throw new Error(data.error || 'AI応答の取得に失敗しました');
             }
@@ -549,6 +605,61 @@ class PersonaAgentFactory {
             setTimeout(() => {
                 toast.classList.remove('show');
             }, 3000);
+        }
+    }
+    
+    // チャット履歴を保存
+    async saveChatHistory(userMessage, aiResponse) {
+        if (!this.selectedPersona || !this.selectedProvider) return;
+        
+        try {
+            const response = await fetch('api/history.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    persona_id: this.selectedPersona.id,
+                    persona_name: this.selectedPersona.name,
+                    provider: this.selectedProvider,
+                    user_message: userMessage,
+                    ai_response: aiResponse
+                })
+            });
+            
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+            }
+            
+            const data = await response.json();
+            if (!data.success) {
+                throw new Error(data.error || '履歴保存に失敗しました');
+            }
+        } catch (error) {
+            console.warn('履歴保存エラー:', error);
+            // エラーが発生してもチャット機能は継続
+        }
+    }
+    
+    // チャット履歴をCSVでエクスポート
+    async exportChatHistory() {
+        try {
+            this.showToast('履歴をエクスポート中...', 'info');
+            
+            const url = 'api/history.php?export=csv';
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `persona_chat_history_${new Date().toISOString().slice(0, 19).replace(/:/g, '-')}.csv`;
+            link.style.display = 'none';
+            
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            
+            this.showToast('履歴をエクスポートしました', 'success');
+        } catch (error) {
+            console.error('エクスポートエラー:', error);
+            this.showToast('エクスポートに失敗しました', 'error');
         }
     }
 }
