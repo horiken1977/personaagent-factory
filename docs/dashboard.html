@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>開発ダッシュボード - PersonaAgent Factory</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .dashboard {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        
+        .header h1 {
+            color: #2c3e50;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            color: #7f8c8d;
+            font-size: 1.1em;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+        
+        .stat-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+            text-align: center;
+            transition: transform 0.3s ease;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .stat-card h3 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            font-size: 1.2em;
+        }
+        
+        .progress-circle {
+            width: 100px;
+            height: 100px;
+            margin: 0 auto 15px;
+            position: relative;
+        }
+        
+        .progress-circle svg {
+            width: 100%;
+            height: 100%;
+            transform: rotate(-90deg);
+        }
+        
+        .progress-circle .bg {
+            fill: none;
+            stroke: #e9ecef;
+            stroke-width: 8;
+        }
+        
+        .progress-circle .progress {
+            fill: none;
+            stroke: #4CAF50;
+            stroke-width: 8;
+            stroke-dasharray: 251.2;
+            stroke-dashoffset: 251.2;
+            transition: stroke-dashoffset 1s ease;
+        }
+        
+        .progress-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        
+        .phase-indicator {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 15px 0;
+        }
+        
+        .phase-indicator h4 {
+            color: #495057;
+            margin-bottom: 10px;
+        }
+        
+        .phase-steps {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        
+        .phase-step {
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            margin: 5px;
+            transition: all 0.3s ease;
+        }
+        
+        .phase-step.completed {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .phase-step.current {
+            background: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeaa7;
+            animation: pulse 2s infinite;
+        }
+        
+        .phase-step.pending {
+            background: #f8f9fa;
+            color: #6c757d;
+            border: 1px solid #dee2e6;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        .documents-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+        
+        .document-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+            transition: transform 0.3s ease;
+        }
+        
+        .document-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .document-card h3 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .document-card h3::before {
+            content: "📄";
+            margin-right: 10px;
+        }
+        
+        .document-card p {
+            color: #7f8c8d;
+            margin-bottom: 15px;
+        }
+        
+        .document-card a {
+            background: #3498db;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 25px;
+            text-decoration: none;
+            display: inline-block;
+            transition: background 0.3s ease;
+        }
+        
+        .document-card a:hover {
+            background: #2980b9;
+        }
+        
+        .next-actions {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 25px;
+            margin-top: 20px;
+        }
+        
+        .next-actions h3 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .next-actions h3::before {
+            content: "🎯";
+            margin-right: 10px;
+        }
+        
+        .action-item {
+            background: white;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 10px 0;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .action-item .priority {
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 0.8em;
+            font-weight: bold;
+        }
+        
+        .action-item .priority.high {
+            background: #ffebee;
+            color: #c62828;
+        }
+        
+        .action-item .priority.medium {
+            background: #fff3e0;
+            color: #ef6c00;
+        }
+        
+        .action-item .priority.low {
+            background: #e8f5e8;
+            color: #2e7d32;
+        }
+        
+        .last-updated {
+            text-align: center;
+            color: #7f8c8d;
+            font-size: 0.9em;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard">
+        <div class="header">
+            <h1>PersonaAgent Factory</h1>
+            <p>開発プロジェクト管理ダッシュボード</p>
+        </div>
+        
+        <div class="stats-grid">
+            <div class="stat-card">
+                <h3>全体進捗</h3>
+                <div class="progress-circle">
+                    <svg viewBox="0 0 90 90">
+                        <circle class="bg" cx="45" cy="45" r="40"></circle>
+                        <circle class="progress" cx="45" cy="45" r="40" style="stroke-dashoffset: 188.4;"></circle>
+                    </svg>
+                    <div class="progress-text">30%</div>
+                </div>
+                <div class="phase-indicator">
+                    <h4>現在のフェーズ</h4>
+                    <div class="phase-steps">
+                        <span class="phase-step completed">計画</span>
+                        <span class="phase-step current">環境構築</span>
+                        <span class="phase-step pending">開発</span>
+                        <span class="phase-step pending">テスト</span>
+                        <span class="phase-step pending">デプロイ</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="stat-card">
+                <h3>機能設計</h3>
+                <div class="progress-circle">
+                    <svg viewBox="0 0 90 90">
+                        <circle class="bg" cx="45" cy="45" r="40"></circle>
+                        <circle class="progress" cx="45" cy="45" r="40" style="stroke-dashoffset: 226.08;"></circle>
+                    </svg>
+                    <div class="progress-text">15%</div>
+                </div>
+                <p>設計書テンプレート作成中</p>
+            </div>
+            
+            <div class="stat-card">
+                <h3>環境設計</h3>
+                <div class="progress-circle">
+                    <svg viewBox="0 0 90 90">
+                        <circle class="bg" cx="45" cy="45" r="40"></circle>
+                        <circle class="progress" cx="45" cy="45" r="40" style="stroke-dashoffset: 163.34;"></circle>
+                    </svg>
+                    <div class="progress-text">40%</div>
+                </div>
+                <p>フォルダ構造作成完了</p>
+            </div>
+            
+            <div class="stat-card">
+                <h3>テスト設計</h3>
+                <div class="progress-circle">
+                    <svg viewBox="0 0 90 90">
+                        <circle class="bg" cx="45" cy="45" r="40"></circle>
+                        <circle class="progress" cx="45" cy="45" r="40" style="stroke-dashoffset: 238.64;"></circle>
+                    </svg>
+                    <div class="progress-text">10%</div>
+                </div>
+                <p>テストフォルダ作成完了</p>
+            </div>
+        </div>
+        
+        <div class="documents-grid">
+            <div class="document-card">
+                <h3>機能設計書</h3>
+                <p>アプリケーションの機能要件と設計仕様を記載</p>
+                <a href="functional_design.html">設計書を確認</a>
+            </div>
+            
+            <div class="document-card">
+                <h3>環境設計書</h3>
+                <p>開発環境、本番環境、インフラ構成を記載</p>
+                <a href="environment_design.html">設計書を確認</a>
+            </div>
+            
+            <div class="document-card">
+                <h3>テスト仕様書</h3>
+                <p>テスト計画、テストケース、自動テストを記載</p>
+                <a href="test_specification.html">仕様書を確認</a>
+            </div>
+        </div>
+        
+        <div class="next-actions">
+            <h3>次のアクション</h3>
+            <div class="action-item">
+                <span>開発ダッシュボードHTML作成完了</span>
+                <span class="priority high">HIGH</span>
+            </div>
+            <div class="action-item">
+                <span>機能設計書テンプレート作成</span>
+                <span class="priority high">HIGH</span>
+            </div>
+            <div class="action-item">
+                <span>環境設計書テンプレート作成</span>
+                <span class="priority high">HIGH</span>
+            </div>
+            <div class="action-item">
+                <span>テスト仕様書テンプレート作成</span>
+                <span class="priority high">HIGH</span>
+            </div>
+            <div class="action-item">
+                <span>自動更新スクリプト作成</span>
+                <span class="priority high">HIGH</span>
+            </div>
+        </div>
+        
+        <div class="last-updated">
+            最終更新: <span id="lastUpdated"></span>
+        </div>
+    </div>
+    
+    <script>
+        document.getElementById('lastUpdated').textContent = '2025-07-07 14:29:01';
+    </script>
+</body>
+</html>

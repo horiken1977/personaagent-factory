@@ -1,0 +1,49 @@
+# GitHub Pages設定
+title: PersonaAgent Factory
+description: パーソナライズされたAIエージェントを作成・管理するためのアプリケーション開発プロジェクト
+author: Development Team
+email: your-email@example.com
+
+# GitHub Pages設定
+baseurl: ""
+url: "https://yourusername.github.io"
+
+# Build settings
+markdown: kramdown
+theme: minima
+plugins:
+  - jekyll-feed
+  - jekyll-sitemap
+  - jekyll-seo-tag
+
+# Exclude from processing
+exclude:
+  - scripts/
+  - backup/
+  - .last_update
+  - .backup_status
+  - README.md
+  - LICENSE
+  - Gemfile
+  - Gemfile.lock
+  - node_modules/
+  - vendor/
+
+# Collections
+collections:
+  docs:
+    output: true
+    permalink: /:collection/:name/
+
+# Defaults
+defaults:
+  - scope:
+      path: ""
+      type: "docs"
+    values:
+      layout: "default"
+      
+# Custom variables
+project_name: "PersonaAgent Factory"
+project_description: "AIエージェント作成・管理システム"
+last_updated: "2025-01-07"

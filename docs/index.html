@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PersonaAgent Factory - 開発ドキュメント</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            padding: 40px;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 20px;
+        }
+        
+        .header h1 {
+            color: #2c3e50;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            color: #7f8c8d;
+            font-size: 1.1em;
+        }
+        
+        .menu-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+        
+        .menu-card {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+            text-align: center;
+            transition: transform 0.3s ease;
+            text-decoration: none;
+            color: inherit;
+        }
+        
+        .menu-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .menu-card .icon {
+            font-size: 3em;
+            margin-bottom: 15px;
+        }
+        
+        .menu-card h3 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+        
+        .menu-card p {
+            color: #7f8c8d;
+            font-size: 0.95em;
+        }
+        
+        .dashboard-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .dashboard-card h3,
+        .dashboard-card p {
+            color: white;
+        }
+        
+        .functional-card {
+            background: linear-gradient(135deg, #74b9ff 0%, #0984e3 100%);
+            color: white;
+        }
+        
+        .functional-card h3,
+        .functional-card p {
+            color: white;
+        }
+        
+        .environment-card {
+            background: linear-gradient(135deg, #55efc4 0%, #00b894 100%);
+            color: white;
+        }
+        
+        .environment-card h3,
+        .environment-card p {
+            color: white;
+        }
+        
+        .test-card {
+            background: linear-gradient(135deg, #a29bfe 0%, #6c5ce7 100%);
+            color: white;
+        }
+        
+        .test-card h3,
+        .test-card p {
+            color: white;
+        }
+        
+        .info-section {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+        
+        .info-section h3 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+        
+        .info-section p {
+            color: #7f8c8d;
+            margin-bottom: 10px;
+        }
+        
+        .feature-list {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        .feature-item {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .feature-item::before {
+            content: "✅";
+            font-size: 1.2em;
+        }
+        
+        .github-link {
+            text-align: center;
+            margin-top: 30px;
+        }
+        
+        .github-link a {
+            background: #24292e;
+            color: white;
+            padding: 15px 30px;
+            border-radius: 25px;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+        
+        .github-link a:hover {
+            background: #1f2328;
+            transform: translateY(-2px);
+        }
+        
+        .github-link a::before {
+            content: "🔗";
+        }
+        
+        .last-updated {
+            text-align: center;
+            color: #7f8c8d;
+            font-size: 0.9em;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #dee2e6;
+        }
+        
+        @media (max-width: 768px) {
+            .menu-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .feature-list {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>PersonaAgent Factory</h1>
+            <p>開発ドキュメント ポータル</p>
+        </div>
+        
+        <div class="menu-grid">
+            <a href="dashboard.html" class="menu-card dashboard-card">
+                <div class="icon">📊</div>
+                <h3>開発ダッシュボード</h3>
+                <p>プロジェクト進捗、フェーズ管理、次のアクションを確認できます</p>
+            </a>
+            
+            <a href="functional_design.html" class="menu-card functional-card">
+                <div class="icon">⚙️</div>
+                <h3>機能設計書</h3>
+                <p>アプリケーションの機能要件と設計仕様を記載しています</p>
+            </a>
+            
+            <a href="environment_design.html" class="menu-card environment-card">
+                <div class="icon">🏗️</div>
+                <h3>環境設計書</h3>
+                <p>開発環境、本番環境、インフラ構成を記載しています</p>
+            </a>
+            
+            <a href="test_specification.html" class="menu-card test-card">
+                <div class="icon">🧪</div>
+                <h3>テスト仕様書</h3>
+                <p>テスト計画、テストケース、自動テストを記載しています</p>
+            </a>
+        </div>
+        
+        <div class="info-section">
+            <h3>プロジェクト概要</h3>
+            <p>PersonaAgent Factory は、パーソナライズされたAIエージェントを作成・管理するためのアプリケーションです。</p>
+            <p>このドキュメントサイトは、開発の進捗と設計情報を一元管理し、チーム全体で情報を共有するためのものです。</p>
+            
+            <div class="feature-list">
+                <div class="feature-item">自動ドキュメント更新</div>
+                <div class="feature-item">進捗グラフ表示</div>
+                <div class="feature-item">フェーズ管理</div>
+                <div class="feature-item">チャット履歴保存</div>
+                <div class="feature-item">GitHub Pages対応</div>
+                <div class="feature-item">レスポンシブデザイン</div>
+            </div>
+        </div>
+        
+        <div class="info-section">
+            <h3>自動更新システム</h3>
+            <p>このドキュメントは Claude Code とのチャット内容から自動的に更新されます。</p>
+            <p>新しい機能要件、環境設定、テストケースが検出された場合、関連するドキュメントに自動的に反映されます。</p>
+            <p>チャット履歴は2時間毎に自動保存され、システムクラッシュ時でも安全に復旧できます。</p>
+        </div>
+        
+        <div class="github-link">
+            <a href="#" id="github-repo">GitHub リポジトリ</a>
+        </div>
+        
+        <div class="last-updated">
+            最終更新: <span id="lastUpdated"></span>
+        </div>
+    </div>
+    
+    <script>
+        document.getElementById('lastUpdated').textContent = new Date().toLocaleString('ja-JP');
+        
+        // GitHub リポジトリのリンクを設定（実際のリポジトリURLに変更してください）
+        const githubLink = document.getElementById('github-repo');
+        githubLink.href = 'https://github.com/yourusername/personaagent_factory';
+    </script>
+</body>
+</html>

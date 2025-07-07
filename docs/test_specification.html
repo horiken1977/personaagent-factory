@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>テスト仕様書 - PersonaAgent Factory</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #a29bfe 0%, #6c5ce7 100%);
+            min-height: 100vh;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            padding: 40px;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            border-bottom: 3px solid #a29bfe;
+            padding-bottom: 20px;
+        }
+        
+        .header h1 {
+            color: #2c3e50;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            color: #7f8c8d;
+            font-size: 1.1em;
+        }
+        
+        .nav-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        
+        .nav-button {
+            background: #a29bfe;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 25px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            font-weight: bold;
+        }
+        
+        .nav-button:hover {
+            background: #6c5ce7;
+            transform: translateY(-2px);
+        }
+        
+        .section {
+            margin-bottom: 40px;
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+        }
+        
+        .section h2 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+            border-left: 4px solid #a29bfe;
+            padding-left: 15px;
+        }
+        
+        .section h3 {
+            color: #34495e;
+            margin: 20px 0 15px 0;
+            font-size: 1.3em;
+        }
+        
+        .section p {
+            color: #7f8c8d;
+            margin-bottom: 15px;
+        }
+        
+        .test-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+        
+        .test-card {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 20px;
+            border-left: 4px solid #a29bfe;
+            transition: transform 0.3s ease;
+        }
+        
+        .test-card:hover {
+            transform: translateY(-3px);
+        }
+        
+        .test-card h4 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+            font-size: 1.1em;
+        }
+        
+        .test-card p {
+            color: #7f8c8d;
+            font-size: 0.95em;
+        }
+        
+        .test-card ul {
+            margin-left: 20px;
+            margin-top: 10px;
+        }
+        
+        .test-card li {
+            color: #7f8c8d;
+            margin-bottom: 5px;
+        }
+        
+        .test-case-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        
+        .test-case-table th,
+        .test-case-table td {
+            border: 1px solid #dee2e6;
+            padding: 12px;
+            text-align: left;
+        }
+        
+        .test-case-table th {
+            background: #f8f9fa;
+            color: #2c3e50;
+            font-weight: bold;
+        }
+        
+        .test-case-table tr:nth-child(even) {
+            background: #f8f9fa;
+        }
+        
+        .status-badge {
+            display: inline-block;
+            padding: 5px 12px;
+            border-radius: 15px;
+            font-size: 0.8em;
+            font-weight: bold;
+        }
+        
+        .status-badge.planned {
+            background: #fff3cd;
+            color: #856404;
+        }
+        
+        .status-badge.development {
+            background: #cce5ff;
+            color: #0066cc;
+        }
+        
+        .status-badge.testing {
+            background: #f0d0ff;
+            color: #7900cc;
+        }
+        
+        .status-badge.passed {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .status-badge.failed {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        
+        .priority-high {
+            color: #e74c3c;
+            font-weight: bold;
+        }
+        
+        .priority-medium {
+            color: #f39c12;
+            font-weight: bold;
+        }
+        
+        .priority-low {
+            color: #27ae60;
+            font-weight: bold;
+        }
+        
+        .test-coverage {
+            background: #e8f5e8;
+            border: 1px solid #4CAF50;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        
+        .test-coverage h4 {
+            color: #2e7d32;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .test-coverage h4::before {
+            content: "📊";
+            margin-right: 10px;
+        }
+        
+        .coverage-bar {
+            background: #e0e0e0;
+            border-radius: 10px;
+            height: 20px;
+            margin: 10px 0;
+            overflow: hidden;
+        }
+        
+        .coverage-progress {
+            background: #4CAF50;
+            height: 100%;
+            border-radius: 10px;
+            transition: width 1s ease;
+        }
+        
+        .coverage-text {
+            text-align: center;
+            margin-top: 10px;
+            font-weight: bold;
+            color: #2e7d32;
+        }
+        
+        .auto-update-info {
+            background: #e8f5e8;
+            border: 1px solid #4CAF50;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        
+        .auto-update-info h4 {
+            color: #2e7d32;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .auto-update-info h4::before {
+            content: "🔄";
+            margin-right: 10px;
+        }
+        
+        .auto-update-info p {
+            color: #2e7d32;
+        }
+        
+        .last-updated {
+            text-align: center;
+            color: #7f8c8d;
+            font-size: 0.9em;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #dee2e6;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>テスト仕様書</h1>
+            <p>PersonaAgent Factory テスト計画・テストケース</p>
+        </div>
+        
+        <div class="nav-buttons">
+            <a href="dashboard.html" class="nav-button">ダッシュボード</a>
+            <a href="functional_design.html" class="nav-button">機能設計書</a>
+            <a href="environment_design.html" class="nav-button">環境設計書</a>
+        </div>
+        
+        <div class="auto-update-info">
+            <h4>自動更新について</h4>
+            <p>この仕様書は Claude Code とのチャット内容から自動的に更新されます。新しいテストケースや変更が検出された場合、自動的に反映されます。</p>
+        </div>
+        
+        <div class="section">
+            <h2>1. テスト戦略</h2>
+            <p>PersonaAgent Factory のテスト戦略は、品質保証と継続的改善を目的とします。</p>
+            
+            <h3>テスト方針</h3>
+            <ul>
+                <li>テスト駆動開発（TDD）の採用</li>
+                <li>自動テストの積極的な活用</li>
+                <li>継続的インテグレーション（CI）との統合</li>
+                <li>テストカバレッジ 80% 以上の維持</li>
+            </ul>
+            
+            <h3>テストレベル</h3>
+            <ul>
+                <li>単体テスト（Unit Test）</li>
+                <li>統合テスト（Integration Test）</li>
+                <li>システムテスト（System Test）</li>
+                <li>受け入れテスト（Acceptance Test）</li>
+            </ul>
+        </div>
+        
+        <div class="section">
+            <h2>2. テストタイプ</h2>
+            
+            <div class="test-grid">
+                <div class="test-card">
+                    <h4>機能テスト <span class="status-badge planned">計画中</span></h4>
+                    <p>アプリケーションの機能要件を検証するテスト</p>
+                    <ul>
+                        <li>エージェント作成機能</li>
+                        <li>設定管理機能</li>
+                        <li>デプロイ機能</li>
+                        <li>監視・ログ機能</li>
+                    </ul>
+                </div>
+                
+                <div class="test-card">
+                    <h4>パフォーマンステスト <span class="status-badge planned">計画中</span></h4>
+                    <p>システムの性能要件を検証するテスト</p>
+                    <ul>
+                        <li>レスポンス時間測定</li>
+                        <li>スループット測定</li>
+                        <li>負荷テスト</li>
+                        <li>ストレステスト</li>
+                    </ul>
+                </div>
+                
+                <div class="test-card">
+                    <h4>セキュリティテスト <span class="status-badge planned">計画中</span></h4>
+                    <p>セキュリティ要件を検証するテスト</p>
+                    <ul>
+                        <li>認証・認可テスト</li>
+                        <li>データ暗号化テスト</li>
+                        <li>脆弱性テスト</li>
+                        <li>アクセス制御テスト</li>
+                    </ul>
+                </div>
+                
+                <div class="test-card">
+                    <h4>ユーザビリティテスト <span class="status-badge planned">計画中</span></h4>
+                    <p>ユーザーエクスペリエンスを検証するテスト</p>
+                    <ul>
+                        <li>UI/UX テスト</li>
+                        <li>操作性テスト</li>
+                        <li>アクセシビリティテスト</li>
+                        <li>ブラウザ互換性テスト</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        
+        <div class="section">
+            <h2>3. テストケース</h2>
+            
+            <table class="test-case-table">
+                <thead>
+                    <tr>
+                        <th>テストID</th>
+                        <th>テスト項目</th>
+                        <th>テスト内容</th>
+                        <th>期待結果</th>
+                        <th>優先度</th>
+                        <th>状態</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>TC001</td>
+                        <td>エージェント作成</td>
+                        <td>新規エージェントの作成機能</td>
+                        <td>エージェントが正常に作成される</td>
+                        <td class="priority-high">高</td>
+                        <td><span class="status-badge planned">計画中</span></td>
+                    </tr>
+                    <tr>
+                        <td>TC002</td>
+                        <td>設定保存</td>
+                        <td>エージェント設定の保存機能</td>
+                        <td>設定が正常に保存される</td>
+                        <td class="priority-high">高</td>
+                        <td><span class="status-badge planned">計画中</span></td>
+                    </tr>
+                    <tr>
+                        <td>TC003</td>
+                        <td>エージェント実行</td>
+                        <td>作成したエージェントの実行機能</td>
+                        <td>エージェントが正常に実行される</td>
+                        <td class="priority-high">高</td>
+                        <td><span class="status-badge planned">計画中</span></td>
+                    </tr>
+                    <tr>
+                        <td>TC004</td>
+                        <td>ログ記録</td>
+                        <td>エージェント実行時のログ記録</td>
+                        <td>ログが正常に記録される</td>
+                        <td class="priority-medium">中</td>
+                        <td><span class="status-badge planned">計画中</span></td>
+                    </tr>
+                    <tr>
+                        <td>TC005</td>
+                        <td>エラーハンドリング</td>
+                        <td>エラー発生時の処理</td>
+                        <td>適切なエラーメッセージが表示される</td>
+                        <td class="priority-high">高</td>
+                        <td><span class="status-badge planned">計画中</span></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        
+        <div class="section">
+            <h2>4. テストデータ</h2>
+            
+            <h3>テストデータの配置</h3>
+            <p>テストデータは <code>test/data/</code> フォルダに配置されます。</p>
+            
+            <h3>テストデータの種類</h3>
+            <ul>
+                <li>正常系テストデータ</li>
+                <li>異常系テストデータ</li>
+                <li>境界値テストデータ</li>
+                <li>パフォーマンステストデータ</li>
+            </ul>
+            
+            <h3>テストデータ管理</h3>
+            <ul>
+                <li>テストデータの版数管理</li>
+                <li>テストデータの自動生成</li>
+                <li>テストデータのクリーンアップ</li>
+            </ul>
+        </div>
+        
+        <div class="section">
+            <h2>5. テスト実行</h2>
+            
+            <h3>テスト実行環境</h3>
+            <p>テスト実行スクリプトは <code>test/scripts/</code> フォルダに配置されます。</p>
+            
+            <h3>自動テスト実行</h3>
+            <ul>
+                <li>CI/CD パイプラインとの統合</li>
+                <li>定期的なテスト実行</li>
+                <li>テスト結果の自動レポート</li>
+            </ul>
+            
+            <h3>手動テスト実行</h3>
+            <ul>
+                <li>探索的テスト</li>
+                <li>ユーザビリティテスト</li>
+                <li>受け入れテスト</li>
+            </ul>
+        </div>
+        
+        <div class="section">
+            <h2>6. テストカバレッジ</h2>
+            
+            <div class="test-coverage">
+                <h4>現在のテストカバレッジ</h4>
+                <div class="coverage-bar">
+                    <div class="coverage-progress" style="width: 0%;"></div>
+                </div>
+                <div class="coverage-text">0% (目標: 80%)</div>
+                <p>テストの実装が進むにつれて、カバレッジが更新されます。</p>
+            </div>
+            
+            <h3>カバレッジ目標</h3>
+            <ul>
+                <li>単体テスト: 90% 以上</li>
+                <li>統合テスト: 80% 以上</li>
+                <li>システムテスト: 70% 以上</li>
+            </ul>
+        </div>
+        
+        <div class="section">
+            <h2>7. テストレポート</h2>
+            
+            <h3>テスト結果レポート</h3>
+            <ul>
+                <li>テスト実行サマリー</li>
+                <li>テストケース別結果</li>
+                <li>カバレッジレポート</li>
+                <li>パフォーマンステスト結果</li>
+            </ul>
+            
+            <h3>不具合レポート</h3>
+            <ul>
+                <li>不具合一覧</li>
+                <li>重要度別分類</li>
+                <li>修正状況</li>
+                <li>再発防止策</li>
+            </ul>
+        </div>
+        
+        <div class="section">
+            <h2>8. テスト環境</h2>
+            
+            <h3>テスト環境構成</h3>
+            <ul>
+                <li>開発環境でのテスト</li>
+                <li>ステージング環境でのテスト</li>
+                <li>本番環境でのテスト</li>
+            </ul>
+            
+            <h3>テスト環境管理</h3>
+            <ul>
+                <li>テスト環境の自動構築</li>
+                <li>テストデータの自動セットアップ</li>
+                <li>テスト環境のクリーンアップ</li>
+            </ul>
+        </div>
+        
+        
+                <div class="section">
+                    <h2>自動更新されたテスト項目</h2>
+                    <p>チャットから自動的に検出された新しいテスト項目です。</p>
+                    <ul>
+                        <li>│   ├── test_specification.html    # テスト仕様書</li><li>├── test/                          # テスト関連</li><li>│   ├── scripts/                   # テスト実行スクリプト</li><li>│   └── data/                      # テストデータ</li><li>- [x] テスト仕様書テンプレート</li><li>- [ ] ユーザーテスト</li>
+                    </ul>
+                    <p>最終更新: 2025-07-07 14:29:01</p>
+                </div>
+                
+        <div class="last-updated">
+            最終更新: <span id="lastUpdated"></span>
+        </div>
+    </div>
+    
+    <script>
+        document.getElementById('lastUpdated').textContent = new Date().toLocaleString('ja-JP');
+    </script>
+</body>
+</html>

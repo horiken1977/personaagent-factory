@@ -1,0 +1,40 @@
+# Environment files
+.env
+
+# Logs
+logs/
+*.log
+
+# Temporary files
+.DS_Store
+Thumbs.db
+
+# IDE files
+.vscode/
+.idea/
+
+# Backup files
+backups/
+*~
+*.bak
+
+# Runtime files
+.last_update
+.backup_status
+
+# Cache files
+cache/
+temp/
+
+# Dependencies (if any)
+node_modules/
+vendor/
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db

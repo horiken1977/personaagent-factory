@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>環境設計書 - PersonaAgent Factory</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #55efc4 0%, #00b894 100%);
+            min-height: 100vh;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            padding: 40px;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            border-bottom: 3px solid #55efc4;
+            padding-bottom: 20px;
+        }
+        
+        .header h1 {
+            color: #2c3e50;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            color: #7f8c8d;
+            font-size: 1.1em;
+        }
+        
+        .nav-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        
+        .nav-button {
+            background: #55efc4;
+            color: #2c3e50;
+            padding: 10px 20px;
+            border-radius: 25px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            font-weight: bold;
+        }
+        
+        .nav-button:hover {
+            background: #00b894;
+            color: white;
+            transform: translateY(-2px);
+        }
+        
+        .section {
+            margin-bottom: 40px;
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+        }
+        
+        .section h2 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+            border-left: 4px solid #55efc4;
+            padding-left: 15px;
+        }
+        
+        .section h3 {
+            color: #34495e;
+            margin: 20px 0 15px 0;
+            font-size: 1.3em;
+        }
+        
+        .section p {
+            color: #7f8c8d;
+            margin-bottom: 15px;
+        }
+        
+        .folder-structure {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            font-family: 'Courier New', monospace;
+        }
+        
+        .folder-structure pre {
+            color: #2c3e50;
+            font-size: 0.9em;
+            line-height: 1.5;
+        }
+        
+        .env-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+        
+        .env-card {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 20px;
+            border-left: 4px solid #55efc4;
+            transition: transform 0.3s ease;
+        }
+        
+        .env-card:hover {
+            transform: translateY(-3px);
+        }
+        
+        .env-card h4 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+            font-size: 1.1em;
+        }
+        
+        .env-card p {
+            color: #7f8c8d;
+            font-size: 0.95em;
+        }
+        
+        .env-card ul {
+            margin-left: 20px;
+            margin-top: 10px;
+        }
+        
+        .env-card li {
+            color: #7f8c8d;
+            margin-bottom: 5px;
+        }
+        
+        .tech-stack {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin: 15px 0;
+        }
+        
+        .tech-item {
+            background: #e8f5e8;
+            color: #2e7d32;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            font-weight: bold;
+            border: 1px solid #4CAF50;
+        }
+        
+        .infrastructure-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        
+        .infrastructure-table th,
+        .infrastructure-table td {
+            border: 1px solid #dee2e6;
+            padding: 12px;
+            text-align: left;
+        }
+        
+        .infrastructure-table th {
+            background: #f8f9fa;
+            color: #2c3e50;
+            font-weight: bold;
+        }
+        
+        .infrastructure-table tr:nth-child(even) {
+            background: #f8f9fa;
+        }
+        
+        .status-badge {
+            display: inline-block;
+            padding: 5px 12px;
+            border-radius: 15px;
+            font-size: 0.8em;
+            font-weight: bold;
+        }
+        
+        .status-badge.setup {
+            background: #fff3cd;
+            color: #856404;
+        }
+        
+        .status-badge.development {
+            background: #cce5ff;
+            color: #0066cc;
+        }
+        
+        .status-badge.production {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .status-badge.not-configured {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        
+        .auto-update-info {
+            background: #e8f5e8;
+            border: 1px solid #4CAF50;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        
+        .auto-update-info h4 {
+            color: #2e7d32;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .auto-update-info h4::before {
+            content: "🔄";
+            margin-right: 10px;
+        }
+        
+        .auto-update-info p {
+            color: #2e7d32;
+        }
+        
+        .last-updated {
+            text-align: center;
+            color: #7f8c8d;
+            font-size: 0.9em;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #dee2e6;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>環境設計書</h1>
+            <p>PersonaAgent Factory インフラ・環境構成</p>
+        </div>
+        
+        <div class="nav-buttons">
+            <a href="dashboard.html" class="nav-button">ダッシュボード</a>
+            <a href="functional_design.html" class="nav-button">機能設計書</a>
+            <a href="test_specification.html" class="nav-button">テスト仕様書</a>
+        </div>
+        
+        <div class="auto-update-info">
+            <h4>自動更新について</h4>
+            <p>この設計書は Claude Code とのチャット内容から自動的に更新されます。新しい環境設定や構成変更が検出された場合、自動的に反映されます。</p>
+        </div>
+        
+        <div class="section">
+            <h2>1. プロジェクト構造</h2>
+            <p>現在のプロジェクトフォルダ構造です。</p>
+            
+            <div class="folder-structure">
+                <pre>
+personaagent_factory/
+├── docs/                           # ドキュメント類
+│   ├── dashboard.html             # 開発ダッシュボード
+│   ├── functional_design.html     # 機能設計書
+│   ├── environment_design.html    # 環境設計書
+│   ├── test_specification.html    # テスト仕様書
+│   └── scripts/                   # 自動更新スクリプト
+│       ├── auto_update.py         # チャット解析・自動更新
+│       └── backup_chat.py         # チャット自動保存
+├── test/                          # テスト関連
+│   ├── scripts/                   # テスト実行スクリプト
+│   └── data/                      # テストデータ
+├── src/                           # ソースコード (予定)
+├── config/                        # 設定ファイル (予定)
+├── .github/                       # GitHub Actions設定 (予定)
+├── claude.md                      # Claude Code メモリファイル
+└── README.md                      # プロジェクト説明
+                </pre>
+            </div>
+        </div>
+        
+        <div class="section">
+            <h2>2. 開発環境</h2>
+            
+            <div class="env-grid">
+                <div class="env-card">
+                    <h4>ローカル開発環境 <span class="status-badge setup">構築中</span></h4>
+                    <p>開発者のローカルマシンでの開発環境</p>
+                    <ul>
+                        <li>OS: macOS (Darwin 24.5.0)</li>
+                        <li>IDE: Claude Code</li>
+                        <li>バージョン管理: Git</li>
+                        <li>パッケージマネージャー: 未設定</li>
+                    </ul>
+                </div>
+                
+                <div class="env-card">
+                    <h4>開発サーバー <span class="status-badge not-configured">未設定</span></h4>
+                    <p>チーム開発用の共有開発環境</p>
+                    <ul>
+                        <li>サーバー: 未設定</li>
+                        <li>CI/CD: 未設定</li>
+                        <li>データベース: 未設定</li>
+                    </ul>
+                </div>
+                
+                <div class="env-card">
+                    <h4>ステージング環境 <span class="status-badge not-configured">未設定</span></h4>
+                    <p>本番環境に近いテスト環境</p>
+                    <ul>
+                        <li>クラウドプロバイダー: 未設定</li>
+                        <li>コンテナ: 未設定</li>
+                        <li>監視: 未設定</li>
+                    </ul>
+                </div>
+                
+                <div class="env-card">
+                    <h4>本番環境 <span class="status-badge not-configured">未設定</span></h4>
+                    <p>実際のサービス提供環境</p>
+                    <ul>
+                        <li>クラウドプロバイダー: 未設定</li>
+                        <li>ロードバランサー: 未設定</li>
+                        <li>バックアップ: 未設定</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        
+        <div class="section">
+            <h2>3. 技術スタック</h2>
+            
+            <h3>フロントエンド</h3>
+            <div class="tech-stack">
+                <span class="tech-item">HTML5</span>
+                <span class="tech-item">CSS3</span>
+                <span class="tech-item">JavaScript</span>
+                <span class="tech-item">未定: React/Vue.js</span>
+            </div>
+            
+            <h3>バックエンド</h3>
+            <div class="tech-stack">
+                <span class="tech-item">Python</span>
+                <span class="tech-item">未定: Node.js/Go</span>
+                <span class="tech-item">RESTful API</span>
+            </div>
+            
+            <h3>データベース</h3>
+            <div class="tech-stack">
+                <span class="tech-item">未定: PostgreSQL</span>
+                <span class="tech-item">未定: MongoDB</span>
+            </div>
+            
+            <h3>インフラ・DevOps</h3>
+            <div class="tech-stack">
+                <span class="tech-item">Git</span>
+                <span class="tech-item">GitHub</span>
+                <span class="tech-item">GitHub Pages</span>
+                <span class="tech-item">未定: Docker</span>
+                <span class="tech-item">未定: AWS/Azure</span>
+            </div>
+        </div>
+        
+        <div class="section">
+            <h2>4. インフラ構成</h2>
+            
+            <table class="infrastructure-table">
+                <thead>
+                    <tr>
+                        <th>コンポーネント</th>
+                        <th>役割</th>
+                        <th>技術</th>
+                        <th>状態</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>ドキュメントサイト</td>
+                        <td>設計書・仕様書の公開</td>
+                        <td>GitHub Pages</td>
+                        <td><span class="status-badge setup">構築中</span></td>
+                    </tr>
+                    <tr>
+                        <td>Webフロントエンド</td>
+                        <td>ユーザーインターフェース</td>
+                        <td>未定</td>
+                        <td><span class="status-badge not-configured">未設定</span></td>
+                    </tr>
+                    <tr>
+                        <td>APIサーバー</td>
+                        <td>ビジネスロジック処理</td>
+                        <td>未定</td>
+                        <td><span class="status-badge not-configured">未設定</span></td>
+                    </tr>
+                    <tr>
+                        <td>データベース</td>
+                        <td>データ永続化</td>
+                        <td>未定</td>
+                        <td><span class="status-badge not-configured">未設定</span></td>
+                    </tr>
+                    <tr>
+                        <td>キャッシュ</td>
+                        <td>パフォーマンス向上</td>
+                        <td>未定</td>
+                        <td><span class="status-badge not-configured">未設定</span></td>
+                    </tr>
+                    <tr>
+                        <td>監視システム</td>
+                        <td>システム監視・アラート</td>
+                        <td>未定</td>
+                        <td><span class="status-badge not-configured">未設定</span></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        
+        <div class="section">
+            <h2>5. 自動化・運用</h2>
+            
+            <h3>開発支援ツール</h3>
+            <ul>
+                <li>自動ドキュメント更新システム（開発中）</li>
+                <li>チャット内容の自動保存システム（開発中）</li>
+                <li>定期バックアップスクリプト（開発中）</li>
+            </ul>
+            
+            <h3>CI/CD パイプライン</h3>
+            <ul>
+                <li>GitHub Actions による自動ビルド（計画中）</li>
+                <li>自動テスト実行（計画中）</li>
+                <li>自動デプロイ（計画中）</li>
+            </ul>
+            
+            <h3>監視・ログ</h3>
+            <ul>
+                <li>アプリケーションログ（計画中）</li>
+                <li>パフォーマンス監視（計画中）</li>
+                <li>エラー追跡（計画中）</li>
+            </ul>
+        </div>
+        
+        <div class="section">
+            <h2>6. セキュリティ</h2>
+            
+            <h3>認証・認可</h3>
+            <ul>
+                <li>OAuth2.0 認証（計画中）</li>
+                <li>JWT トークン管理（計画中）</li>
+                <li>ロールベースアクセス制御（計画中）</li>
+            </ul>
+            
+            <h3>データ保護</h3>
+            <ul>
+                <li>データ暗号化（計画中）</li>
+                <li>HTTPS通信（計画中）</li>
+                <li>機密情報の環境変数管理（計画中）</li>
+            </ul>
+        </div>
+        
+        <div class="section">
+            <h2>7. 運用・保守</h2>
+            
+            <h3>バックアップ戦略</h3>
+            <ul>
+                <li>データベース定期バックアップ（計画中）</li>
+                <li>ソースコード Git バックアップ（実装済み）</li>
+                <li>設定ファイルのバックアップ（計画中）</li>
+            </ul>
+            
+            <h3>災害復旧</h3>
+            <ul>
+                <li>データ復旧手順の整備（計画中）</li>
+                <li>サービス復旧時間の目標設定（計画中）</li>
+                <li>障害対応マニュアル（計画中）</li>
+            </ul>
+        </div>
+        
+        
+                <div class="section">
+                    <h2>自動更新された環境設定</h2>
+                    <p>チャットから自動的に検出された新しい環境設定です。</p>
+                    <ul>
+                        <li>## 開発環境構成</li><li>│   ├── environment_design.html    # 環境設計書</li><li>- [x] 環境設計書テンプレート</li><li>- [ ] 本番環境デプロイ</li><li>### インフラ</li><li>- 開発環境: ローカル + GitHub</li>
+                    </ul>
+                    <p>最終更新: 2025-07-07 14:29:01</p>
+                </div>
+                
+        <div class="last-updated">
+            最終更新: <span id="lastUpdated"></span>
+        </div>
+    </div>
+    
+    <script>
+        document.getElementById('lastUpdated').textContent = new Date().toLocaleString('ja-JP');
+    </script>
+</body>
+</html>
