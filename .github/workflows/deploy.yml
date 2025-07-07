@@ -33,7 +33,6 @@ jobs:
           --exclude='.git/' \
           --exclude='.github/' \
           --exclude='node_modules/' \
-          --exclude='docs/' \
           --exclude='test/' \
           --exclude='tests/' \
           --exclude='backups/' \
