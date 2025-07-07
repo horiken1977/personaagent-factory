@@ -8,7 +8,7 @@ class PersonaAgentFactory {
         this.personas = [];
         this.selectedPersona = null;
         this.selectedProvider = null;
-        this.chatHistory = [];
+        this.chatHistories = {}; // ペルソナIDごとのチャット履歴
         this.isLoading = false;
         this.inputConfirmed = false; // 入力確定状態
         
@@ -364,9 +364,46 @@ class PersonaAgentFactory {
     
     // チャット初期化
     initializeChat() {
-        this.chatHistory = [];
+        // 選択されたペルソナの履歴を初期化（既存の履歴があればそれを使用）
+        const personaId = this.selectedPersona.id;
+        if (!this.chatHistories[personaId]) {
+            this.chatHistories[personaId] = [];
+        }
         this.displayWelcomeMessage();
         this.focusChatInput();
+        
+        // 既存の履歴があれば表示
+        this.displayExistingHistory(personaId);
+    }
+    
+    // 現在のペルソナのチャット履歴を取得
+    getCurrentChatHistory() {
+        if (!this.selectedPersona) return [];
+        return this.chatHistories[this.selectedPersona.id] || [];
+    }
+    
+    // 既存の履歴を表示
+    displayExistingHistory(personaId) {
+        const history = this.chatHistories[personaId];
+        const messagesContainer = document.getElementById('chatMessages');
+        
+        if (history && history.length > 0 && messagesContainer) {
+            // ウェルカムメッセージの後に既存の履歴を追加
+            history.forEach(item => {
+                const messageElement = document.createElement('div');
+                messageElement.className = `message ${item.type}-message`;
+                
+                const contentElement = document.createElement('div');
+                contentElement.className = 'message-content';
+                contentElement.innerHTML = this.formatMessageContent(item.content);
+                
+                messageElement.appendChild(contentElement);
+                messagesContainer.appendChild(messageElement);
+            });
+            
+            // 最下部にスクロール
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
     }
     
     // ウェルカムメッセージの表示
@@ -508,8 +545,14 @@ class PersonaAgentFactory {
         messagesContainer.appendChild(messageElement);
         messagesContainer.scrollTop = messagesContainer.scrollHeight;
         
-        // チャット履歴に追加
-        this.chatHistory.push({ type, content, timestamp: new Date() });
+        // ペルソナごとのチャット履歴に追加
+        if (this.selectedPersona) {
+            const personaId = this.selectedPersona.id;
+            if (!this.chatHistories[personaId]) {
+                this.chatHistories[personaId] = [];
+            }
+            this.chatHistories[personaId].push({ type, content, timestamp: new Date() });
+        }
     }
     
     // メッセージのフォーマット
@@ -532,7 +575,7 @@ class PersonaAgentFactory {
                     message: userMessage,
                     persona: this.selectedPersona,
                     provider: this.selectedProvider,
-                    history: this.chatHistory.slice(-10) // 直近10件の履歴
+                    history: this.getCurrentChatHistory().slice(-10) // 現在のペルソナの直近10件の履歴
                 })
             });
             
@@ -593,8 +636,12 @@ class PersonaAgentFactory {
     
     // チャットをクリア
     clearChat() {
-        if (confirm('チャット履歴をクリアしますか？')) {
-            this.chatHistory = [];
+        if (confirm('このペルソナとのチャット履歴をクリアしますか？')) {
+            // 現在のペルソナの履歴をクリア
+            if (this.selectedPersona) {
+                this.chatHistories[this.selectedPersona.id] = [];
+            }
+            
             const messagesContainer = document.getElementById('chatMessages');
             if (messagesContainer) {
                 // ウェルカムメッセージ以外を削除
@@ -654,22 +701,22 @@ class PersonaAgentFactory {
         }
     }
     
-    // チャット履歴をCSVでエクスポート
+    // チャット履歴をCSVでエクスポート（全ペルソナの履歴を含む）
     async exportChatHistory() {
         try {
-            this.showToast('履歴をエクスポート中...', 'info');
+            this.showToast('全ペルソナの履歴をエクスポート中...', 'info');
             
             const url = 'api/history.php?export=csv';
             const link = document.createElement('a');
             link.href = url;
-            link.download = `persona_chat_history_${new Date().toISOString().slice(0, 19).replace(/:/g, '-')}.csv`;
+            link.download = `persona_chat_history_all_${new Date().toISOString().slice(0, 19).replace(/:/g, '-')}.csv`;
             link.style.display = 'none';
             
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
             
-            this.showToast('履歴をエクスポートしました', 'success');
+            this.showToast('全ペルソナの履歴をエクスポートしました', 'success');
         } catch (error) {
             console.error('エクスポートエラー:', error);
             this.showToast('エクスポートに失敗しました', 'error');
