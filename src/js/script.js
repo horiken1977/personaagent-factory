@@ -212,8 +212,8 @@ class PersonaAgentFactory {
         
         const providerNames = {
             'openai': 'OpenAI GPT-4',
-            'claude': 'Anthropic Claude',
-            'gemini': 'Google Gemini'
+            'claude': 'Anthropic Claude 4',
+            'gemini': 'Google Gemini 2.0'
         };
         
         select.innerHTML = '<option value="">選択してください</option>' +

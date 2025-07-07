@@ -198,7 +198,7 @@ function callOpenAI($systemPrompt, $userMessage, $history) {
 
 /**
  * Claude API 呼び出し
- * 利用可能なモデル: claude-3-5-sonnet-20241022, claude-3-opus-20240229 (2025年1月時点)
+ * 利用可能なモデル: claude-3-5-sonnet-latest (Sonnet 4), claude-3-opus-latest (Opus 4)
  */
 function callClaude($systemPrompt, $userMessage, $history) {
     $apiKey = getApiKey('claude');
@@ -222,7 +222,7 @@ function callClaude($systemPrompt, $userMessage, $history) {
     $messages[] = ['role' => 'user', 'content' => $userMessage];
     
     $data = json_encode([
-        'model' => 'claude-3-5-sonnet-20241022',  // 最新のClaude 3.5 Sonnetモデル
+        'model' => 'claude-3-5-sonnet-latest',  // Claude Sonnet 4 最新版
         'system' => $systemPrompt,
         'messages' => $messages,
         'max_tokens' => 1500
@@ -266,7 +266,7 @@ function callClaude($systemPrompt, $userMessage, $history) {
 
 /**
  * Gemini API 呼び出し
- * 利用可能なモデル: gemini-1.5-flash, gemini-1.5-pro (2025年1月時点)
+ * 利用可能なモデル: gemini-2.0-flash-exp (最新), gemini-1.5-pro, gemini-1.5-flash
  */
 function callGemini($systemPrompt, $userMessage, $history) {
     $apiKey = getApiKey('gemini');
@@ -299,7 +299,7 @@ function callGemini($systemPrompt, $userMessage, $history) {
         'Content-Type: application/json'
     ];
     
-    $url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={$apiKey}";
+    $url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent?key={$apiKey}";
     $response = makeApiCall($url, $headers, $data);
     
     if (!$response) {
