@@ -12,6 +12,13 @@ header('Access-Control-Allow-Methods: GET');
 header('Access-Control-Allow-Headers: Content-Type');
 
 try {
+    // APIキーの状況をチェック
+    $apiKeyStatus = [
+        'openai' => !empty(OPENAI_API_KEY) ? 'configured' : 'missing',
+        'claude' => !empty(CLAUDE_API_KEY) ? 'configured' : 'missing', 
+        'gemini' => !empty(GEMINI_API_KEY) ? 'configured' : 'missing'
+    ];
+    
     // 利用可能なプロバイダーを取得
     $providers = getAvailableProviders();
     
@@ -19,11 +26,15 @@ try {
     $response = [
         'success' => true,
         'providers' => $providers,
-        'count' => count($providers)
+        'count' => count($providers),
+        'debug' => [
+            'api_key_status' => $apiKeyStatus,
+            'env_loaded' => file_exists(__DIR__ . '/../../.env')
+        ]
     ];
     
     // ログ出力
-    writeLog("Available providers requested: " . implode(', ', $providers));
+    writeLog("Available providers requested: " . implode(', ', $providers) . " | API Keys: " . json_encode($apiKeyStatus));
     
     echo json_encode($response, JSON_UNESCAPED_UNICODE);
     
