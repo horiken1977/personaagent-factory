@@ -121,6 +121,7 @@ class PersonaAgentFactory {
         const backToSelection = document.getElementById('backToSelection');
         const clearChat = document.getElementById('clearChat');
         const exportHistory = document.getElementById('exportHistory');
+        const showLogs = document.getElementById('showLogs');
         
         chatInput?.addEventListener('input', () => this.handleInputChange());
         chatInput?.addEventListener('keydown', (e) => this.handleKeyDown(e));
@@ -129,6 +130,18 @@ class PersonaAgentFactory {
         backToSelection?.addEventListener('click', () => this.backToSelection());
         clearChat?.addEventListener('click', () => this.clearChat());
         exportHistory?.addEventListener('click', () => this.exportChatHistory());
+        showLogs?.addEventListener('click', () => this.showLogsModal());
+        
+        // ログモーダル関連
+        const closeLogsModal = document.getElementById('closeLogsModal');
+        const refreshLogs = document.getElementById('refreshLogs');
+        const showErrorLogs = document.getElementById('showErrorLogs');
+        const showAllLogs = document.getElementById('showAllLogs');
+        
+        closeLogsModal?.addEventListener('click', () => this.hideLogsModal());
+        refreshLogs?.addEventListener('click', () => this.loadLogs('recent'));
+        showErrorLogs?.addEventListener('click', () => this.loadLogs('error'));
+        showAllLogs?.addEventListener('click', () => this.loadLogs('recent'));
         
         // ESCキーでモーダルを閉じる
         document.addEventListener('keydown', (e) => {
@@ -660,6 +673,57 @@ class PersonaAgentFactory {
         } catch (error) {
             console.error('エクスポートエラー:', error);
             this.showToast('エクスポートに失敗しました', 'error');
+        }
+    }
+    
+    // ログモーダルを表示
+    showLogsModal() {
+        const modal = document.getElementById('logsModal');
+        if (modal) {
+            modal.style.display = 'flex';
+            this.loadLogs('recent');
+        }
+    }
+    
+    // ログモーダルを非表示
+    hideLogsModal() {
+        const modal = document.getElementById('logsModal');
+        if (modal) {
+            modal.style.display = 'none';
+        }
+    }
+    
+    // ログを読み込み
+    async loadLogs(type = 'recent') {
+        try {
+            const response = await fetch(`api/logs.php?action=${type}&lines=100`);
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+            }
+            
+            const data = await response.json();
+            if (data.success) {
+                this.displayLogs(data.logs, type);
+            } else {
+                throw new Error(data.error || 'ログの取得に失敗しました');
+            }
+        } catch (error) {
+            console.error('ログ取得エラー:', error);
+            this.displayLogs(['ログの取得に失敗しました: ' + error.message], 'error');
+        }
+    }
+    
+    // ログを表示
+    displayLogs(logs, type) {
+        const logOutput = document.getElementById('logOutput');
+        if (logOutput) {
+            if (logs.length === 0) {
+                logOutput.textContent = `${type === 'error' ? 'エラー' : ''}ログが見つかりません。`;
+            } else {
+                logOutput.textContent = logs.join('\n');
+                // 最下部にスクロール
+                logOutput.scrollTop = logOutput.scrollHeight;
+            }
         }
     }
 }

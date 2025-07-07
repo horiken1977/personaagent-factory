@@ -90,6 +90,7 @@
                 <button class="btn btn-secondary" id="backToSelection">ペルソナ選択に戻る</button>
                 <button class="btn btn-secondary" id="clearChat">チャットをクリア</button>
                 <button class="btn btn-secondary" id="exportHistory">履歴をCSV出力</button>
+                <button class="btn btn-secondary" id="showLogs">ログを表示</button>
             </div>
         </div>
         
@@ -128,6 +129,26 @@
     <div class="loading-spinner" id="loadingSpinner" style="display: none;">
         <div class="spinner"></div>
         <div class="loading-text">AI が応答を生成中...</div>
+    </div>
+
+    <!-- ログ表示モーダル -->
+    <div class="modal" id="logsModal" style="display: none;">
+        <div class="modal-content" style="width: 80%; max-width: 800px;">
+            <div class="modal-header">
+                <h3>システムログ</h3>
+                <button class="close-btn" id="closeLogsModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="log-controls">
+                    <button class="btn btn-sm" id="refreshLogs">更新</button>
+                    <button class="btn btn-sm" id="showErrorLogs">エラーのみ</button>
+                    <button class="btn btn-sm" id="showAllLogs">全ログ</button>
+                </div>
+                <div class="log-content">
+                    <pre id="logOutput" style="height: 400px; overflow-y: auto; background: #f8f9fa; padding: 10px; font-size: 12px; white-space: pre-wrap;"></pre>
+                </div>
+            </div>
+        </div>
     </div>
 
     <!-- トーストメッセージ -->

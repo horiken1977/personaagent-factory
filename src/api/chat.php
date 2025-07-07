@@ -69,12 +69,19 @@ try {
     echo json_encode($result, JSON_UNESCAPED_UNICODE);
     
 } catch (Exception $e) {
-    writeLog("Chat API error: " . $e->getMessage(), 'ERROR');
+    writeLog("Chat API error: " . $e->getMessage() . " in " . $e->getFile() . " on line " . $e->getLine(), 'ERROR');
+    writeLog("Request data: " . json_encode($_POST), 'ERROR');
     
     http_response_code(500);
     echo json_encode([
         'success' => false,
-        'error' => $e->getMessage()
+        'error' => $e->getMessage(),
+        'debug' => [
+            'file' => basename($e->getFile()),
+            'line' => $e->getLine(),
+            'provider_available' => in_array($provider ?? 'unknown', getAvailableProviders()),
+            'timestamp' => date('Y-m-d H:i:s')
+        ]
     ], JSON_UNESCAPED_UNICODE);
 }
 
