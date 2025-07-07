@@ -438,9 +438,62 @@ class PersonaAgentFactory {
         }
     }
     
-    // ウェルカムメッセージの生成
+    // ウェルカムメッセージの生成（個性に合わせた話し方）
     generateWelcomeMessage(persona) {
-        return `
+        const messages = {
+            'factory_worker_1': `
+                <p>お疲れ様です！<strong>${persona.name}</strong>と申します。</p>
+                <p>愛知の自動車部品工場で${persona.years_of_experience}、ライン作業をやらせてもらってます。組立や品質チェックが主な仕事ですね。</p>
+                <p>現場の生の声をお伝えできると思います。作業のことや職場のことなど、何でも気軽に聞いてください。一緒に頑張りましょう！</p>
+            `,
+            'factory_worker_2': `
+                <p>こんにちは、<strong>${persona.name}</strong>です。</p>
+                <p>横浜の精密機器工場で${persona.years_of_experience}働いています。組立と品質管理、それから後輩の指導も担当しています。</p>
+                <p>女性として製造現場で培った経験を活かして、技術的なアドバイスや職場改善のご提案ができればと思います。どんなことでもお聞かせください。</p>
+            `,
+            'line_manager_1': `
+                <p>お疲れ様です、<strong>${persona.name}</strong>です。</p>
+                <p>大阪の工場でライン管理を${persona.years_of_experience}やっております。現場の安全と効率化、それから部下の育成が私の使命です。</p>
+                <p>管理者の立場から、生産管理や人材育成についてお役に立てることがあれば何でもご相談ください。現場と管理の両方の視点でお答えします。</p>
+            `,
+            'line_manager_2': `
+                <p>こんにちは、<strong>${persona.name}</strong>と申します。</p>
+                <p>静岡の電子部品工場で${persona.years_of_experience}、ライン管理をしています。品質向上と効率化を追求しながら、働きやすい職場作りを心がけています。</p>
+                <p>現場改善や品質管理について、実践的なアドバイスをさせていただきます。お気軽にご相談ください。</p>
+            `,
+            'system_engineer_1': `
+                <p>こんにちは、<strong>${persona.name}</strong>です。</p>
+                <p>兵庫県の化学工場で${persona.years_of_experience}、システムエンジニアとして働いています。生産システムの設計・保守や、IoT・AI導入のプロジェクトを手がけています。</p>
+                <p>技術的な課題解決や最新技術の活用について、専門知識を活かしてサポートいたします。システム関連のご質問、お待ちしています。</p>
+            `,
+            'system_engineer_2': `
+                <p>お疲れ様です、<strong>${persona.name}</strong>です。</p>
+                <p>千葉の食品工場で${persona.years_of_experience}、制御システムの開発・運用を担当しています。自動化システムやデータ分析が専門分野です。</p>
+                <p>スマートファクトリー化や生産性向上について、技術的な観点からお手伝いできればと思います。何でもお気軽にご質問ください。</p>
+            `,
+            'factory_manager_1': `
+                <p>お疲れ様です、<strong>${persona.name}</strong>です。</p>
+                <p>茨城の自動車部品工場で工場長を務めており、${persona.years_of_experience}の製造業経験があります。工場全体の運営、戦略立案、人材育成が私の責務です。</p>
+                <p>経営視点での課題解決や事業戦略について、これまでの経験を基にアドバイスさせていただきます。どのようなことでもご相談ください。</p>
+            `,
+            'factory_manager_2': `
+                <p>こんにちは、<strong>${persona.name}</strong>です。</p>
+                <p>群馬の機械製造工場で工場長として${persona.years_of_experience}の経験を積んでまいりました。持続可能な経営と従業員の幸福を両立させることを信念としています。</p>
+                <p>工場経営や組織運営について、実践に基づいたご提案をいたします。お気軽にお声がけください。</p>
+            `,
+            'sales_1': `
+                <p>お疲れ様です！<strong>${persona.name}</strong>と申します。</p>
+                <p>東京を拠点に${persona.years_of_experience}、産業機械の営業をしています。お客様のニーズを汲み取って、最適なソリューションをご提案するのが私の仕事です。</p>
+                <p>市場動向や顧客ニーズについて、営業の最前線からの情報をお伝えできます。ビジネスのことなら何でもお聞かせください！</p>
+            `,
+            'sales_2': `
+                <p>こんにちは、<strong>${persona.name}</strong>です。</p>
+                <p>福岡を中心に${persona.years_of_experience}、製造設備の営業をしています。技術的な知識を活かして、お客様の課題解決に貢献することが私のやりがいです。</p>
+                <p>技術営業の経験から、市場トレンドや導入事例について詳しくお話しできます。どんなことでもお気軽にご相談ください。</p>
+            `
+        };
+        
+        return messages[persona.id] || `
             <p>こんにちは！私は<strong>${persona.name}</strong>です。</p>
             <p>現在、${persona.position}として働いており、主に${persona.main_responsibilities}を担当しています。</p>
             <p>製造現場での経験を活かして、お客様のご質問やご相談にお答えします。どのようなことでもお気軽にお話しください。</p>
