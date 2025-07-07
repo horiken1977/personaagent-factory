@@ -600,6 +600,52 @@ body {
     background: var(--warning-color);
 }
 
+/* === ログ表示関連 === */
+.log-controls {
+    margin-bottom: var(--spacing-4);
+    display: flex;
+    gap: var(--spacing-2);
+    flex-wrap: wrap;
+}
+
+.log-controls .btn {
+    font-size: var(--font-size-sm);
+    padding: var(--spacing-2) var(--spacing-3);
+}
+
+.log-content {
+    border: 1px solid var(--gray-300);
+    border-radius: var(--border-radius);
+    overflow: hidden;
+}
+
+#logOutput {
+    font-family: 'Courier New', monospace;
+    font-size: 11px;
+    line-height: 1.4;
+    color: var(--gray-800);
+    margin: 0;
+    border: none;
+    resize: none;
+    outline: none;
+}
+
+.btn-sm {
+    font-size: var(--font-size-xs);
+    padding: var(--spacing-1) var(--spacing-2);
+    border-radius: var(--border-radius-sm);
+    background: var(--gray-200);
+    border: 1px solid var(--gray-300);
+    color: var(--gray-700);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn-sm:hover {
+    background: var(--gray-300);
+    color: var(--gray-800);
+}
+
 /* レスポンシブデザイン */
 @media (max-width: 768px) {
     .container {

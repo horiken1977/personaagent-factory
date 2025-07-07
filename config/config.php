@@ -179,6 +179,9 @@ function loadPersonas() {
  * API呼び出し共通関数
  */
 function makeApiCall($url, $headers, $data = null, $method = 'POST') {
+    writeLog("Making API call to: {$url} with method: {$method}", 'INFO');
+    writeLog("Headers: " . json_encode($headers), 'INFO');
+    
     $ch = curl_init();
     
     curl_setopt_array($ch, [

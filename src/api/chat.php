@@ -202,8 +202,11 @@ function callOpenAI($systemPrompt, $userMessage, $history) {
 function callClaude($systemPrompt, $userMessage, $history) {
     $apiKey = getApiKey('claude');
     if (empty($apiKey)) {
+        writeLog("Claude API key is empty: " . var_export($apiKey, true), 'ERROR');
         throw new Exception('Claude API key not configured');
     }
+    
+    writeLog("Claude API call starting with key length: " . strlen($apiKey), 'INFO');
     
     // Claude用のメッセージ形式を構築
     $messages = [];
@@ -233,17 +236,28 @@ function callClaude($systemPrompt, $userMessage, $history) {
     $response = makeApiCall('https://api.anthropic.com/v1/messages', $headers, $data);
     
     if (!$response) {
+        writeLog("Claude API call failed - no response received", 'ERROR');
         throw new Exception('Claude API call failed');
     }
     
+    writeLog("Claude API response received: " . substr($response, 0, 200) . "...", 'INFO');
+    
     $result = json_decode($response, true);
     
+    if (!$result) {
+        writeLog("Claude API response JSON decode failed: " . json_last_error_msg(), 'ERROR');
+        writeLog("Raw response: " . $response, 'ERROR');
+        throw new Exception('Claude API response decode failed');
+    }
+    
     if (isset($result['error'])) {
-        throw new Exception('Claude API error: ' . $result['error']['message']);
+        writeLog("Claude API error: " . json_encode($result['error']), 'ERROR');
+        throw new Exception('Claude API error: ' . ($result['error']['message'] ?? 'Unknown error'));
     }
     
     if (!isset($result['content'][0]['text'])) {
-        throw new Exception('Invalid response from Claude API');
+        writeLog("Claude API invalid response structure: " . json_encode($result), 'ERROR');
+        throw new Exception('Invalid response from Claude API - missing content');
     }
     
     return trim($result['content'][0]['text']);
